@@ -1,4 +1,3 @@
-import 'package:dio/dio.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:riverpod_advanced/infrastructure/api.dart';
 import 'package:riverpod_advanced/models/movie.dart';
