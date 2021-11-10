@@ -1,19 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:riverpod_advanced/models/movie.dart';
+import 'package:query_provider/query_provider.dart';
 import 'package:riverpod_advanced/services/movie.dart';
-import 'package:riverpod_advanced/states/api.state.dart';
-import 'package:riverpod_advanced/states/query.notifier.dart';
 
-final moviesProvider =
-    StateNotifierProvider<QueryNotifier<List<Movie>>, APIState<List<Movie>>>(
-  (ref) {
-    final getMovies = ref.watch(movieServiceProvider).getMovies;
-    return QueryNotifier(
-      () => getMovies(),
-      shouldFetchOnMount: true,
-    );
-  },
+final moviesProvider = QueryProvider(
+  (ref) => ref.read(movieServiceProvider).getMovies(),
+  shouldFetchOnMount: true,
 );
 
 class HomePage extends ConsumerWidget {

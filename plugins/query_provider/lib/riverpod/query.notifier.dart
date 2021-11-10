@@ -1,5 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:riverpod_advanced/states/api.state.dart';
+
+import '../state/api.state.dart';
 
 class QueryNotifier<T> extends StateNotifier<APIState<T>> {
   QueryNotifier(

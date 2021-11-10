@@ -1,16 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:query_provider/query_provider.dart';
 import 'package:riverpod_advanced/models/movie.dart';
 import 'package:riverpod_advanced/services/movie.dart';
-import 'package:riverpod_advanced/states/api.state.dart';
-import 'package:riverpod_advanced/states/query.notifier.dart';
 
-final movieProvider =
-    StateNotifierProvider.family<QueryNotifier<Movie>, APIState<Movie>, String>(
-  (ref, id) => QueryNotifier(
-    () => ref.watch(movieServiceProvider).getMovie(id),
-    shouldFetchOnMount: true,
-  ),
+final movieProvider = QueryProviderFamily<Movie, String>(
+  (ref, id) => ref.read(movieServiceProvider).getMovie(id),
+  shouldFetchOnMount: true,
 );
 
 class MoviePage extends ConsumerWidget {
