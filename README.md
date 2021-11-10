@@ -1,6 +1,6 @@
 # FLUTTER SWR EXAMPLE
 
-Test stale-while-revalidate pattern with riverpod.
+Test stale-while-revalidate pattern with riverpod. Look; [query_provider](/plugins/query_provider) package
 
 - Backend calls are made with [ghibli-api](https://ghibliapi.herokuapp.com/)
 - Tested Provider.family to check if state are persisted in memory.
