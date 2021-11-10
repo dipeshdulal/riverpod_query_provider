@@ -1,16 +1,19 @@
-# riverpod_advanced
+# FLUTTER SWR EXAMPLE
 
-A new Flutter project.
+Test stale-while-revalidate pattern with riverpod.
 
-## Getting Started
+- Backend calls are made with [ghibli-api](https://ghibliapi.herokuapp.com/)
+- Tested Provider.family to check if state are persisted in memory.
 
-This project is a starting point for a Flutter application.
+## Screens
 
-A few resources to get you started if this is your first Flutter project:
+| Main Screen           | Movie Screen            |
+| --------------------- | ----------------------- |
+| ![main.png](main.png) | ![movie.png](movie.png) |
 
-- [Lab: Write your first Flutter app](https://flutter.dev/docs/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://flutter.dev/docs/cookbook)
+## Checklist
 
-For help getting started with Flutter, view our
-[online documentation](https://flutter.dev/docs), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+- [x] Riverpod setup with backend calls.
+- [ ] Cache the network requests with dio http cache.
+- [ ] Invalidate cache and update the data in background if new data is present.
+- [ ] Add a way to invalidate and refetch the data.
