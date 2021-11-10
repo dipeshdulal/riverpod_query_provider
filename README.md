@@ -14,6 +14,5 @@ Test stale-while-revalidate pattern with riverpod. Look; [query_provider](/plugi
 ## Checklist
 
 - [x] Riverpod setup with backend calls.
-- [ ] Cache the network requests with dio http cache.
-- [ ] Invalidate cache and update the data in background if new data is present.
+- [ ] Cache the service returned response.
 - [ ] Add a way to invalidate and refetch the data.
