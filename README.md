@@ -15,4 +15,4 @@ Test stale-while-revalidate pattern with riverpod. Look; [query_provider](/plugi
 
 - [x] Riverpod setup with backend calls.
 - [x] Cache the service returned response.
-- [ ] Add a way to invalidate and refetch the data.
+- [x] Add a way to invalidate and refetch the data.
