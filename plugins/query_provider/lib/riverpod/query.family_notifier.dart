@@ -12,7 +12,8 @@ class QueryFamilyNotifier<T, P> extends FamilyNotifier<APIState<T>, P> {
     this.shouldFetchOnMount = false,
   });
 
-  Future<T> Function(NotifierProviderRef<APIState<T>> ref, P param) service;
+  Future<T> Function(NotifierProviderRef<APIState<T>> ref, P param,
+      APIState<T> previousState) service;
 
   @override
   APIState<T> build(_) {
@@ -26,8 +27,9 @@ class QueryFamilyNotifier<T, P> extends FamilyNotifier<APIState<T>, P> {
     bool shouldThrow = false,
   }) async {
     try {
+      final previousState = state;
       state = APIState.loading(state.data);
-      final response = await service(ref, arg);
+      final response = await service(ref, arg, previousState);
       state = APIState.data(response);
       return response;
     } catch (e, trace) {

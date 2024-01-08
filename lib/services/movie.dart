@@ -1,4 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:riverpod_advanced/cache/movies_cache_manager.dart';
 import 'package:riverpod_advanced/infrastructure/api.dart';
 import 'package:riverpod_advanced/models/movie.dart';
 
@@ -11,17 +12,58 @@ final movieServiceProvider = Provider((ref) => GhibliMovieService());
 
 class GhibliMovieService extends MovieService {
   @override
-  Future<Movie> getMovie(String id) async {
-    final response = await httpClient.get('/films/$id');
-    return Movie.fromJson(response.data);
+  Future<Movie> getMovie(String id, {bool useCache = false}) async {
+    final path = '/films/$id';
+
+    // Cache
+    var didFindCache = false;
+    Map<String, Object?>? cachedJson;
+    if (useCache) {
+      cachedJson =
+          (await moviesCacheManager.tryGetJson(path)) as Map<String, Object?>?;
+      didFindCache = cachedJson != null;
+    }
+
+    // Parse cache or send request
+    final moviesJson = cachedJson ?? (await httpClient.get(path)).data;
+    final movie = Movie.fromJson(moviesJson);
+
+    // Saving cache after json parse to guarantee it is not an error json
+    if (!didFindCache)
+      Future(() => moviesCacheManager.putJson(
+            path,
+            moviesJson,
+          ));
+
+    return movie;
   }
 
   @override
-  Future<List<Movie>> getMovies() async {
-    final response = await httpClient.get('/films');
-    final movies = response.data as List<dynamic>;
-    return [
-      for (final m in movies) Movie.fromJson(m),
+  Future<List<Movie>> getMovies({bool useCache = false}) async {
+    final path = '/films';
+
+    // Cache
+    var didFindCache = false;
+    List<Object?>? responseJson;
+    if (useCache) {
+      responseJson =
+          (await moviesCacheManager.tryGetJson(path)) as List<Object?>?;
+      didFindCache = responseJson != null;
+    }
+
+    // Parse cache or send request
+    final moviesJson = responseJson ?? (await httpClient.get(path)).data;
+    final movies = [
+      for (final movieJson in moviesJson) Movie.fromJson(movieJson),
     ];
+
+    // Saving cache after json parse to guarantee it is not an error json
+    if (!didFindCache)
+      Future(() => moviesCacheManager.putJson(
+            path,
+            moviesJson,
+          ));
+
+    return movies;
   }
 }

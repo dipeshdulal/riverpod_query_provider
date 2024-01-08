@@ -12,7 +12,8 @@ class QueryNotifier<T> extends Notifier<APIState<T>> {
     this.shouldFetchOnMount = false,
   });
 
-  Future<T> Function(NotifierProviderRef<APIState<T>> ref) service;
+  Future<T> Function(
+      NotifierProviderRef<APIState<T>> ref, APIState<T> previousState) service;
 
   @override
   APIState<T> build() {
@@ -23,11 +24,12 @@ class QueryNotifier<T> extends Notifier<APIState<T>> {
   }
 
   Future<T?> fetch({
-    bool shouldThrow = false,
+    bool shouldThrow = true,
   }) async {
     try {
+      final previousState = state;
       state = APIState.loading(state.data);
-      final response = await service(ref);
+      final response = await service(ref, previousState);
       state = APIState.data(response);
       return response;
     } catch (e, trace) {

@@ -5,7 +5,8 @@ import 'query.family_notifier.dart';
 import 'query.notifier.dart';
 
 NotifierProvider<QueryNotifier<T>, APIState<T>> QueryProvider<T>(
-  Future<T> Function(NotifierProviderRef ref) service, {
+  Future<T> Function(NotifierProviderRef ref, APIState<T> previousState)
+      service, {
   T? initial,
   bool shouldFetchOnMount = false,
 }) {
@@ -18,9 +19,9 @@ NotifierProvider<QueryNotifier<T>, APIState<T>> QueryProvider<T>(
   );
 }
 
-NotifierProviderFamily<QueryFamilyNotifier<T,P>, APIState<T>, P>
+NotifierProviderFamily<QueryFamilyNotifier<T, P>, APIState<T>, P>
     QueryProviderFamily<T, P>(
-  Future<T> Function(NotifierProviderRef ref, P param) service, {
+  Future<T> Function(NotifierProviderRef ref, P param, APIState<T> previousState) service, {
   T? initial,
   bool shouldFetchOnMount = false,
 }) {
