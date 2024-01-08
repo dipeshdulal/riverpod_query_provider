@@ -7,6 +7,8 @@ import 'package:riverpod_advanced/models/movie.dart';
 import 'package:riverpod_advanced/services/movie.dart';
 
 final moviesProvider = QueryProvider<List<Movie>>(
+  // First call will use cache data(if available)
+  // Next calls will always refetch the data from API
   (ref, previousState) => ref.read(movieServiceProvider).getMovies(
         useCache: previousState.data == null,
       ),
@@ -19,6 +21,18 @@ class HomePage extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final moviesState = ref.watch(moviesProvider);
+    ref.listen(moviesProvider, (previous, next) async {
+      if (previous?.data == null && next.data != null) {
+        final snackBarController = ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text("Updating")),
+        );
+
+        // * REVALIDATE
+        await ref.read(moviesProvider.notifier).fetch();
+
+        snackBarController.close();
+      }
+    });
     return Scaffold(
       appBar: AppBar(
         title: Text("Studio Ghibli Movies"),
