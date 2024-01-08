@@ -1,31 +1,32 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../state/api.state.dart';
+import 'query.family_notifier.dart';
 import 'query.notifier.dart';
 
-StateNotifierProvider<QueryNotifier<T>, APIState<T>> QueryProvider<T>(
-  Future<T> Function(StateNotifierProviderRef ref) service, {
+NotifierProvider<QueryNotifier<T>, APIState<T>> QueryProvider<T>(
+  Future<T> Function(NotifierProviderRef ref) service, {
   T? initial,
   bool shouldFetchOnMount = false,
 }) {
-  return StateNotifierProvider(
-    (ref) => QueryNotifier(
-      () => service(ref),
+  return NotifierProvider(
+    () => QueryNotifier(
+      service,
       initial: initial,
       shouldFetchOnMount: shouldFetchOnMount,
     ),
   );
 }
 
-StateNotifierProviderFamily<QueryNotifier<T>, APIState<T>, P>
+NotifierProviderFamily<QueryFamilyNotifier<T,P>, APIState<T>, P>
     QueryProviderFamily<T, P>(
-  Future<T> Function(StateNotifierProviderRef ref, P param) service, {
+  Future<T> Function(NotifierProviderRef ref, P param) service, {
   T? initial,
   bool shouldFetchOnMount = false,
 }) {
-  return StateNotifierProvider.family(
-    (ref, param) => QueryNotifier(
-      () => service(ref, param),
+  return NotifierProvider.family(
+    () => QueryFamilyNotifier(
+      service,
       initial: initial,
       shouldFetchOnMount: shouldFetchOnMount,
     ),
