@@ -1,11 +1,18 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:query_provider/query_provider.dart';
+import 'package:riverpod_advanced/cache/movies_cache_manager.dart';
 import 'package:riverpod_advanced/models/movie.dart';
 import 'package:riverpod_advanced/services/movie.dart';
 
 final movieProvider = QueryProviderFamily<Movie, String>(
-  (ref, id) => ref.read(movieServiceProvider).getMovie(id),
+  // First call will use cache data(if available)
+  // Next calls will always refetch the data from API
+  (ref, id, previousState) => ref.read(movieServiceProvider).getMovie(
+        id,
+        useCache: previousState.data == null,
+      ),
   shouldFetchOnMount: true,
 );
 
@@ -20,6 +27,18 @@ class MoviePage extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final movieState = ref.watch(movieProvider(args["id"]));
     final movie = movieState.data;
+    ref.listen(movieProvider(args["id"]), (previous, next) async {
+      if (previous?.data == null && next.data != null) {
+        final snackBarController = ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text("Updating")),
+        );
+
+        // * REVALIDATE
+        await ref.read(movieProvider(args["id"]).notifier).fetch();
+
+        snackBarController.close();
+      }
+    });
     return Scaffold(
       appBar: AppBar(
         title: Text(args['title'] ?? ''),
@@ -36,11 +55,13 @@ class MoviePage extends ConsumerWidget {
             Expanded(
               child: ListView(
                 children: [
-                  Image.network(
-                    movie!.movie_banner,
+                  CachedNetworkImage(
+                    imageUrl: movie!.movie_banner,
                     height: 200,
                     width: double.infinity,
                     fit: BoxFit.cover,
+                    cacheManager: moviesCacheManager,
+                    fadeInDuration: Duration.zero,
                   ),
                   Padding(
                     padding: const EdgeInsets.all(8.0),
@@ -63,7 +84,12 @@ class MoviePage extends ConsumerWidget {
                     padding: const EdgeInsets.all(8.0),
                     child: Row(
                       children: [
-                        Expanded(child: Image.network(movie.image)),
+                        Expanded(
+                            child: CachedNetworkImage(
+                          imageUrl: movie.image,
+                          cacheManager: moviesCacheManager,
+                          fadeInDuration: Duration.zero,
+                        )),
                         Expanded(
                           child: Column(
                             children: [

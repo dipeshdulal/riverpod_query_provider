@@ -2,21 +2,21 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../state/api.state.dart';
 
-class QueryNotifier<T> extends Notifier<APIState<T>> {
+class QueryFamilyNotifier<T, P> extends FamilyNotifier<APIState<T>, P> {
   final T? initial;
   final bool shouldFetchOnMount;
 
-  QueryNotifier(
+  QueryFamilyNotifier(
     this.service, {
     this.initial,
     this.shouldFetchOnMount = false,
   });
 
-  Future<T> Function(
-      NotifierProviderRef<APIState<T>> ref, APIState<T> previousState) service;
+  Future<T> Function(NotifierProviderRef<APIState<T>> ref, P param,
+      APIState<T> previousState) service;
 
   @override
-  APIState<T> build() {
+  APIState<T> build(_) {
     if (shouldFetchOnMount) {
       Future(fetch);
     }
@@ -24,12 +24,12 @@ class QueryNotifier<T> extends Notifier<APIState<T>> {
   }
 
   Future<T?> fetch({
-    bool shouldThrow = true,
+    bool shouldThrow = false,
   }) async {
     try {
       final previousState = state;
       state = APIState.loading(state.data);
-      final response = await service(ref, previousState);
+      final response = await service(ref, arg, previousState);
       state = APIState.data(response);
       return response;
     } catch (e, trace) {
